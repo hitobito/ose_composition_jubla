@@ -1,6 +1,3 @@
-[submodule "hitobito"]
-	path = hitobito
-	url = https://github.com/hitobito/hitobito.git
 [submodule "hitobito_youth"]
 	path = hitobito_youth
 	url = https://github.com/hitobito/hitobito_youth.git
