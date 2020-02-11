@@ -2,12 +2,12 @@
 [submodule "hitobito"]
 	path = hitobito
 	url = https://github.com/hitobito/hitobito.git
-	branch = master
+	branch = rails-5
 [submodule "hitobito_youth"]
 	path = hitobito_youth
 	url = https://github.com/hitobito/hitobito_youth.git
-	branch = master
+	branch = rails-5
 [submodule "hitobito_jubla"]
 	path = hitobito_jubla
 	url = https://github.com/hitobito/hitobito_jubla.git
-	branch = master
+	branch = rails-5
