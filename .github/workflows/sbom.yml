@@ -129,37 +129,36 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: 'Generate SBOM for npm dependencies and push to Dependency Track'
-        env:
-          PROJECT_NAME: hitobito-jubla-frontend
-          PROJECT_VERSION: ${{ github.ref_name }}
-        working-directory: hitobito
-        run: |
-          npm install -g @appthreat/cdxgen
-          cdxgen -o ./sbom-npm.xml -t npm .
-          curl --verbose -s --location --request POST ${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom \
-          --header "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
-          --header "Content-Type: multipart/form-data" \
-          --form "autoCreate=true" \
-          --form "projectName=${PROJECT_NAME:-$GITHUB_REPOSITORY}" \
-          --form "projectVersion=${PROJECT_VERSION:-$GITHUB_REF}" \
-          --form "bom=@sbom-npm.xml"
-
-      - name: 'Generate SBOM for ruby dependencies and push to Dependency Track'
-        env:
-          PROJECT_NAME: hitobito-jubla-backend
-          PROJECT_VERSION: ${{ github.ref_name }}
+      - name: 'Generate SBOM for ruby dependencies'
         working-directory: hitobito
         run: |
           npm install -g @appthreat/cdxgen
           cdxgen -o ./sbom-ruby.xml -t ruby .
+
+      - name: 'Generate SBOM for npm dependencies'
+        working-directory: hitobito
+        run: |
+          npm install -g @appthreat/cdxgen
+          cdxgen -o ./sbom-npm.xml -t npm .
+
+      - name: 'Merge frontend and backend SBOMs'
+        working-directory: hitobito
+        run: |
+          docker run --rm -v $(pwd):/data cyclonedx/cyclonedx-cli merge --input-files data/sbom-ruby.xml data/sbom-npm.xml --output-file data/sbom.xml
+
+      - name: 'Push merged SBOM to dependency track'
+        env:
+          PROJECT_NAME: hitobito-jubla
+          PROJECT_VERSION: ${{ github.ref_name }}
+        working-directory: hitobito
+        run: |
           curl --verbose -s --location --request POST ${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom \
           --header "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
           --header "Content-Type: multipart/form-data" \
           --form "autoCreate=true" \
           --form "projectName=${PROJECT_NAME:-$GITHUB_REPOSITORY}" \
           --form "projectVersion=${PROJECT_VERSION:-$GITHUB_REF}" \
-          --form "bom=@sbom-ruby.xml"
+          --form "bom=@sbom.xml"
 
       - uses: actions/upload-artifact@v2
         if: always()
@@ -168,23 +167,3 @@ jobs:
           path: |
             ./hitobito/sbom-npm.xml
             ./hitobito/sbom-ruby.xml
-
-#      - name: Upload ruby SBOM (list of dependencies) to Dependency Track
-#        uses: AppThreat/cdxgen-action@v1
-#        with:
-#          output: "./reports/bom.xml"
-#          serverUrl: ${{ secrets.DEPENDENCY_TRACK_URL }}
-#          apiKey: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
-#          project-name: hitobito-jubla-backend
-#          project-version: ${{ github.ref_name }}
-#          working-directory: hitobito
-#
-#      - name: Upload javascript SBOM (list of dependencies) to Dependency Track
-#        uses: puzzle/action-owasp-dependecy-track-check@latest
-#        with:
-#          url: ${{ secrets.DEPENDENCY_TRACK_URL }}
-#          key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
-#          language: yarn
-#          project-name: hitobito-jubla-frontend
-#          project-version: ${{ github.ref_name }}
-#          working-directory: hitobito
