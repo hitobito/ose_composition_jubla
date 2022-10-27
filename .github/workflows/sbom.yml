@@ -1,10 +1,10 @@
 name: Generate and push an SBOM dependency list
 
 on:
-  #push:
-  # Only when tagging a new version which will be deployed
-  #  tags:
-  #    - '*'
+  push:
+    # Only when tagging a new version which will be deployed
+    tags:
+      - '*'
   workflow_dispatch:
 
 jobs:
