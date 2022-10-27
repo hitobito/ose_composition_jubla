@@ -167,3 +167,4 @@ jobs:
           path: |
             ./hitobito/sbom-npm.xml
             ./hitobito/sbom-ruby.xml
+            ./hitobito/sbom.xml
