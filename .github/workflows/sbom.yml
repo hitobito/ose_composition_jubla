@@ -135,13 +135,13 @@ jobs:
           SCAN_DEBUG_MODE: debug
         run: |
           npm install -g @appthreat/cdxgen
-          cdxgen -o ./sbom-ruby.xml -t ruby .
+          cdxgen -o ./sbom-ruby.xml -t ruby --recurse=false .
 
       - name: 'Generate SBOM for npm dependencies'
         working-directory: hitobito
         run: |
           npm install -g @appthreat/cdxgen
-          cdxgen -o ./sbom-npm.xml -t npm .
+          cdxgen -o ./sbom-npm.xml -t npm --recurse=false .
 
       - name: 'Merge frontend and backend SBOMs'
         working-directory: hitobito
