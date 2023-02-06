@@ -131,6 +131,8 @@ jobs:
 
       - name: 'Generate SBOM for ruby dependencies'
         working-directory: hitobito
+        env:
+          SCAN_DEBUG_MODE: debug
         run: |
           npm install -g @appthreat/cdxgen
           cdxgen -o ./sbom-ruby.xml -t ruby .
