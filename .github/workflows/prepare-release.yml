@@ -1,0 +1,12 @@
+name: 'Prepare Release'
+
+on:
+  workflow_dispatch: # Allow triggering manually
+
+jobs:
+  prepare_release:
+    uses: hitobito/hitobito/.github/workflows/prepare-version.yml@master
+    with:
+      composition: ${{ github.event.repository.name }}
+      next_version: patch
+    secrets: inherit
