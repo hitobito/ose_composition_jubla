@@ -1,0 +1,43 @@
+name: 'Build composition repo'
+
+on:
+  workflow_dispatch: # Allow triggering manually
+    inputs:
+      stage:
+        type: choice
+        description: "Stage of release to be built"
+        default: integration
+        required: true
+        options:
+          - integration
+          - production
+  # schedule:
+  # - cron:  '24 2 * * *'
+
+jobs:
+  settings:
+    uses: hitobito/hitobito/.github/workflows/stage-settings.yml@master
+    with:
+      repository: ${{ github.repository }}
+      stage: ${{ inputs.stage }}
+
+  version:
+    uses: hitobito/hitobito/.github/workflows/remote-version.yml@master
+    needs:
+      - settings
+    with:
+      repository_url: ${{ needs.settings.outputs.repo_url }}
+      stage: ${{ inputs.stage }}
+
+  build:
+    uses: hitobito/hitobito/.github/workflows/build-image.yml@master
+    needs:
+      - settings
+      - version
+    with:
+      composition: ${{ needs.settings.outputs.repo_name }}
+      source_ref: ${{ needs.settings.outputs.composition_branch }}
+      project: ${{ needs.settings.outputs.project }}
+      version: ${{ needs.version.outputs.version }}
+      stage: ${{ inputs.stage }}
+    secrets: inherit
