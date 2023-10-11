@@ -1,0 +1,21 @@
+name: 'Update Integration'
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '24 2 * * 1-5'
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/prepare-release.yml
+    with:
+      stage: integration
+    secrets: inherit
+
+  build:
+    uses: ./.github/workflows/build-composition.yml
+    with:
+      stage: integration
+    needs:
+      - prepare
+    secrets: inherit

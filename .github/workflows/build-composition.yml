@@ -11,8 +11,13 @@ on:
         options:
           - integration
           - production
-  # schedule:
-  # - cron:  '24 2 * * *'
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        description: "Stage of release to be prepared"
+        default: integration
+        required: true
 
 jobs:
   settings:
