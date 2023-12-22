@@ -1,4 +1,4 @@
-name: 'Prepare Release'
+name: "Prepare properly versioned Release"
 
 on:
   workflow_dispatch: # Allow triggering manually
@@ -11,6 +11,30 @@ on:
         options:
           - integration
           - production
+      release:
+        type: choice
+        description: "Type of Release: regular, patch or custom"
+        required: true
+        default: "regular"
+        options:
+          - regular
+          - patch
+          - custom
+      version:
+        type: string
+        description: "next version number, if Release is custom"
+        required: false
+      branch:
+        type: string
+        description: "Branch to be released"
+        required: false
+        default: "master"
+      dry_run:
+        type: boolean
+        description: "Only show commands, do not execute them"
+        required: false
+        default: false
+
   workflow_call:
     inputs:
       stage:
@@ -18,13 +42,34 @@ on:
         description: "Stage of release to be prepared"
         default: integration
         required: true
+      release:
+        type: string
+        description: "Type of Release: regular, patch or custom"
+        required: true
+        default: "regular"
+      version:
+        type: string
+        description: "next version number, if Release is custom"
+        required: false
+      branch:
+        type: string
+        description: "Branch to be released"
+        required: false
+        default: "master"
+      dry_run:
+        type: boolean
+        description: "Only show commands, do not execute them"
+        required: false
+        default: false
 
 jobs:
   prepare_release:
     uses: hitobito/hitobito/.github/workflows/prepare-version.yml@master
     with:
-      composition: ${{ github.repository }}
-      next_version: patch
-      stage: ${{ inputs.stage }}
-      # target_branch: master
+      composition:   ${{ github.repository }}
+      release_type:  ${{ inputs.release }}
+      next_version:  ${{ inputs.version }}
+      stage:         ${{ inputs.stage }}
+      target_branch: ${{ inputs.branch }}
+      dry_run:       ${{ inputs.dry_run }}
     secrets: inherit

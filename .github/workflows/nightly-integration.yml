@@ -10,6 +10,7 @@ jobs:
     uses: ./.github/workflows/prepare-release.yml
     with:
       stage: integration
+      release: integration
     secrets: inherit
 
   build:
