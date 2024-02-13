@@ -1,0 +1,35 @@
+name: 'Update Production'
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        type: choice
+        description: "Type of Release: regular, patch or custom"
+        required: true
+        default: "regular"
+        options:
+          - regular
+          - patch
+          - custom
+      version:
+        type: string
+        description: "next version number, if Release is custom"
+        required: false
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/prepare-release.yml
+    with:
+      stage: production
+      release: ${{ inputs.release }}
+      version: ${{ inputs.version }}
+    secrets: inherit
+
+  build:
+    uses: ./.github/workflows/build-composition.yml
+    with:
+      stage: production
+    needs:
+      - prepare
+    secrets: inherit
