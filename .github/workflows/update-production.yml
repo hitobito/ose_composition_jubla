@@ -16,20 +16,19 @@ on:
         type: string
         description: "next version number, if Release is custom"
         required: false
+      branch:
+        type: string
+        description: "Branch to be released"
+        required: false
+        default: "master"
 
 jobs:
-  prepare:
-    uses: ./.github/workflows/prepare-release.yml
+  release:
+    uses: hitobito/hitobito/.github/workflows/release.yml@master
     with:
+      composition: ${{ github.repository }}
+      release_type: ${{ inputs.release }}
+      next_version: ${{ inputs.version }}
       stage: production
-      release: ${{ inputs.release }}
-      version: ${{ inputs.version }}
-    secrets: inherit
-
-  build:
-    uses: ./.github/workflows/build-composition.yml
-    with:
-      stage: production
-    needs:
-      - prepare
+      target_branch: ${{ inputs.branch }}
     secrets: inherit
