@@ -1,22 +1,21 @@
-name: 'Update Integration'
+name: Update Integration
 
 on:
   workflow_dispatch:
     inputs:
-      branch:
+      target_branch:
         type: string
-        description: "Branch to be released"
+        description: Release a specific branch of the core and wagons. Leave empty for intelligent defaults.
         required: false
-        default: "master"
   schedule:
-    - cron: '15 2 * * 1-5'
+    - cron: 15 2 * * 1-5
 
 jobs:
   release:
     uses: hitobito/hitobito/.github/workflows/release.yml@master
     with:
       composition: ${{ github.repository }}
-      release_type: 'regular'
-      stage: 'integration'
-      target_branch: ${{ inputs.branch || 'master' }}
+      release_type: regular
+      stage: integration
+      target_branch: ${{ inputs.target_branch }}
     secrets: inherit

@@ -1,26 +1,25 @@
-name: 'Update Production'
+name: Update Production
 
 on:
   workflow_dispatch:
     inputs:
       release:
         type: choice
-        description: "Type of Release: regular, patch or custom"
+        description: Type of release. Regular is for normal, planned releases. Patch is for hotfixes and single-customer fix releases. Use custom to manually set a version number.
         required: true
-        default: "regular"
+        default: regular
         options:
           - regular
           - patch
           - custom
       version:
         type: string
-        description: "next version number, if Release is custom"
+        description: Manually set version number, if release type is custom
         required: false
-      branch:
+      target_branch:
         type: string
-        description: "Branch to be released"
+        description: Release a specific branch of the core and wagons. Leave empty for intelligent defaults.
         required: false
-        default: "master"
 
 jobs:
   release:
@@ -30,5 +29,5 @@ jobs:
       release_type: ${{ inputs.release }}
       next_version: ${{ inputs.version }}
       stage: production
-      target_branch: ${{ inputs.branch }}
+      target_branch: ${{ inputs.target_branch }}
     secrets: inherit
