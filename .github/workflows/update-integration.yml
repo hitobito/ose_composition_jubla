@@ -9,6 +9,7 @@ on:
         required: false
   schedule:
     - cron: 15 2 * * 1-5
+      timezone: 'Europe/Berlin'
 
 jobs:
   release:
